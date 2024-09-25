@@ -1,7 +1,13 @@
+import React from "react";
 import { Lock, User } from "@phosphor-icons/react";
 import { useState } from "react";
+import { authenticateUser } from "../../api";
 
-function LoginPages() {
+interface LoginPagesProps {
+  setIsLogin: (isLogin: boolean) => void;
+}
+
+const LoginPages: React.FC<LoginPagesProps> = ({ setIsLogin }) => {
   const [data, setData] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
 
@@ -14,12 +20,16 @@ function LoginPages() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      console.log("data", data);
+      const user = await authenticateUser(data);
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+        setIsLogin(true);
+      }
     } catch (error) {
       console.log("Error Submit Login: ", error);
     } finally {
@@ -87,6 +97,6 @@ function LoginPages() {
       </form>
     </div>
   );
-}
+};
 
 export default LoginPages;
