@@ -5,9 +5,17 @@ const BtnTheme = () => {
     <div>
       {/* Theme controller */}
       <label className="swap swap-rotate">
-        <input type="checkbox" className="theme-controller" value="forest" />
-        <Sun size={36} className="fill-current swap-off" />
-        <Moon size={36} className="fill-current swap-on" />
+        <input type="checkbox" className="theme-controller" value="business" />
+        <Sun
+          size={30}
+          className="fill-current swap-off text-primary-content"
+          weight="fill"
+        />
+        <Moon
+          size={30}
+          className="fill-current swap-on text-primary-content"
+          weight="fill"
+        />
       </label>
     </div>
   );
