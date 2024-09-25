@@ -1,50 +1,29 @@
-# React + TypeScript + Vite
+# Slipstream
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Slipstream adalah sebuah aplikasi web yang dibuat menggunakan React, Tailwind CSS, dan Vite. Aplikasi ini masih dalam tahap pengembangan dan belum memiliki fitur yang lengkap.
 
-Currently, two official plugins are available:
+## Fitur
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Login page dengan validasi form
+- Theme controller yang dapat mengubah tema aplikasi
+- Menggunakan React Hooks dan React Context
 
-## Expanding the ESLint configuration
+## Teknologi
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- React
+- Tailwind CSS
+- Vite
+- TypeScript
+- ESLint
+- Prettier
 
-- Configure the top-level `parserOptions` property like this:
+## Instalasi
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+1. Clone repository ini
+2. Jalankan perintah `npm install` atau `yarn install`
+3. Jalankan perintah `npm run dev` atau `yarn dev`
+4. Buka browser dan akses http://localhost:3000
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Pengembangan
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+Jika Anda ingin berkontribusi pada pengembangan aplikasi ini, silakan buat pull request. Pastikan Anda telah membaca dan memahami [kode etik](https://www.contributor-covenant.org/version/2/0/code_of_conduct/) sebelum berkontribusi.
