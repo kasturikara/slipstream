@@ -1,11 +1,54 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import BtnTheme from "../../components/ui/BtnTheme";
-import { House, PlusCircle, UserCircle } from "@phosphor-icons/react";
+import {
+  ArrowCircleDown,
+  House,
+  PlusCircle,
+  UserCircle,
+} from "@phosphor-icons/react";
 import { Link, useLocation } from "react-router-dom";
+import { getTotalPerMonth } from "../../api";
+import { months, Month } from "../../utils/monthValue";
+import { FormatRupiah } from "@arismun/format-rupiah";
 
 const DashboardPage: React.FC = () => {
   const location = useLocation();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [balancePerMonth, setBalancePerMonth] = useState<any[] | null>(null);
+  // total income & expense
+  const [total, setTotal] = useState<{ income: number; expense: number }>({
+    income: 0,
+    expense: 0,
+  });
+  const [loading, setLoading] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string>("2024-09-01");
+
+  useEffect(() => {
+    fetchBalance();
+  }, []);
+
+  const fetchBalance = async () => {
+    setLoading(true);
+
+    try {
+      const takeBalance = await getTotalPerMonth(user?.id, selectedDate);
+      if (takeBalance) {
+        setTotal({
+          income: takeBalance.total_income,
+          expense: takeBalance.total_expense,
+        });
+      }
+    } catch (error) {
+      console.log("Error get balance: ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDateChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSelectedDate = event.target.value;
+    setSelectedDate(newSelectedDate);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -18,24 +61,44 @@ const DashboardPage: React.FC = () => {
             alt="profile"
             className="w-12 h-12 rounded-box"
           />
-          <h3 className="text-xl font-bold">{user?.nama}</h3>
         </div>
+        <select
+          value={selectedDate}
+          onChange={handleDateChange}
+          className="select select-ghost"
+        >
+          {months.map((item) => (
+            <option key={item.value} value={item.value + "-01"}>
+              {item.label}
+            </option>
+          ))}
+        </select>
         <BtnTheme />
       </nav>
 
       {/* amount */}
       <div className="z-20 w-11/12 shadow-xl bg-primary mt-28 text-primary-content card">
         <div className="card-body">
-          <h2 className="justify-center card-title">Total Amount</h2>
-          <p className="text-center">Rp. 0</p>
-          <div className="flex items-center justify-between mt-4">
-            <div className="text-center">
-              <p>income</p>
-              <p>Rp.0</p>
+          <button onClick={() => console.log(total)}>tes</button>
+
+          <h2 className="justify-center text-lg card-title">Total Balance</h2>
+          <p className="text-4xl font-extrabold text-center">
+            <FormatRupiah value={user?.total} />
+          </p>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            {/* card income */}
+            <div className="px-4 py-2 text-center rounded-xl bg-success text-base-200">
+              <p className="flex justify-center gap-2 font-semibold">
+                <ArrowCircleDown size={24} weight="bold" /> Income
+              </p>
+              <FormatRupiah value={total.income} />
             </div>
-            <div className="text-center">
-              <p>expense</p>
-              <p>Rp.0</p>
+            {/* card expense */}
+            <div className="px-4 py-2 text-center rounded-xl bg-warning text-base-200">
+              <p className="flex justify-center gap-2 font-semibold">
+                <ArrowCircleDown size={24} weight="bold" /> Expense
+              </p>
+              <FormatRupiah value={total.expense} />
             </div>
           </div>
         </div>
