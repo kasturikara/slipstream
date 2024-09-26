@@ -9,6 +9,6 @@ export default {
   },
   plugins: [daisyui],
   daisyui: {
-    themes: ["winter", "business"],
+    themes: ["cupcake", "business"],
   },
 };

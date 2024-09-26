@@ -7,12 +7,12 @@ const BtnTheme = () => {
       <label className="swap swap-rotate">
         <input type="checkbox" className="theme-controller" value="business" />
         <Sun
-          size={30}
+          size={26}
           className="fill-current swap-off text-primary-content"
           weight="fill"
         />
         <Moon
-          size={30}
+          size={26}
           className="fill-current swap-on text-primary-content"
           weight="fill"
         />
