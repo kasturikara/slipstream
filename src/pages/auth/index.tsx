@@ -34,6 +34,7 @@ const LoginPages: React.FC<LoginPagesProps> = ({ setIsLogin }) => {
       console.log("Error Submit Login: ", error);
     } finally {
       setLoading(false);
+      window.location.href = "/";
     }
   };
 
