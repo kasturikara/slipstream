@@ -8,14 +8,14 @@ import {
   UserCircle,
 } from "@phosphor-icons/react";
 import { Link, useLocation } from "react-router-dom";
-import { getTotalPerMonth } from "../../api";
-import { months, Month } from "../../utils/monthValue";
+import { getHistory, getTotalPerMonth } from "../../api";
+import { months } from "../../utils/monthValue";
 import { FormatRupiah } from "@arismun/format-rupiah";
+import { formatDate, isToday, isYesterday } from "../../utils/lib";
 
 const DashboardPage: React.FC = () => {
   const location = useLocation();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const [balancePerMonth, setBalancePerMonth] = useState<any[] | null>(null);
   // total income & expense
   const [total, setTotal] = useState<{ income: number; expense: number }>({
     income: 0,
@@ -23,6 +23,7 @@ const DashboardPage: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>("2024-09-01");
+  const [history, setHistory] = useState<any[] | null>(null);
 
   useEffect(() => {
     fetchBalance();
@@ -38,6 +39,11 @@ const DashboardPage: React.FC = () => {
           income: takeBalance.total_income,
           expense: takeBalance.total_expense,
         });
+      }
+
+      const takeHistory = await getHistory(user?.id);
+      if (takeHistory) {
+        setHistory(takeHistory);
       }
     } catch (error) {
       console.log("Error get balance: ", error);
@@ -112,9 +118,35 @@ const DashboardPage: React.FC = () => {
           <h2 className="text-lg font-bold">Transaction History</h2>
           <button className=" text-slate-500 btn-ghost btn">See all</button>
         </div>
-        <div className="">hehe</div>
-        <div className="">hehe</div>
-        <div className="">hehe</div>
+
+        {/* card history */}
+        {history ? (
+          history.map((item: any) => (
+            <div key={item.id} className="flex items-center justify-between">
+              <div className="">
+                <h4 className="text-lg font-bold">{item.deskripsi}</h4>
+                <h6 className="text-sm text-slate-500">
+                  {isToday(item.tanggal)
+                    ? "Today"
+                    : isYesterday(item.tanggal)
+                    ? "Yesterday"
+                    : formatDate(item.tanggal)}
+                </h6>
+              </div>
+              <p
+                className={`text-lg font-extrabold text-${
+                  item.tipe === "income" ? "success" : "error"
+                }
+                `}
+              >
+                {item.tipe === "income" ? "+" : "-"}{" "}
+                <FormatRupiah value={item.jumlah} />
+              </p>
+            </div>
+          ))
+        ) : (
+          <span className="my-6 text-center text-slate-500">no data</span>
+        )}
       </div>
 
       {/* Footer Navigation */}

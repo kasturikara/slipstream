@@ -75,3 +75,22 @@ export async function getTotalPerMonth(id: string, bulan: string) {
     return null;
   }
 }
+
+export async function getHistory(id: string) {
+  try {
+    const { data, error: errorHistory } = await supabase
+      .from("transaksi")
+      .select("*")
+      .eq("user_id", id)
+      .order("tanggal", { ascending: false });
+
+    if (!data || errorHistory) {
+      console.log("Error get history: ", errorHistory);
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    console.log("Error get history: ", error);
+  }
+}
