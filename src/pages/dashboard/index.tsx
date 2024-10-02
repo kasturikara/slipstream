@@ -11,6 +11,7 @@ import {
   isYesterday,
 } from "../../utils/lib";
 import FooterNav from "../../components/ui/FooterNav";
+import LoadingDash from "../loading/loadingDash";
 
 const DashboardPage: React.FC = () => {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -64,7 +65,9 @@ const DashboardPage: React.FC = () => {
     setSelectedDate(newSelectedDate);
   };
 
-  return (
+  return loading ? (
+    <LoadingDash />
+  ) : (
     <>
       {/* nav atas */}
       <nav className="fixed top-0 z-20 flex items-center justify-between w-full px-4 py-2 text-primary-content">
