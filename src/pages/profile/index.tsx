@@ -1,6 +1,8 @@
+import FooterNav from "../../components/ui/FooterNav";
+
 function ProfilePages() {
   return (
-    <div>
+    <div className="z-20 flex flex-col items-center justify-center w-screen h-screen p-4">
       <button
         onClick={() => {
           localStorage.removeItem("user");
@@ -10,6 +12,8 @@ function ProfilePages() {
       >
         Sign Out
       </button>
+
+      <FooterNav />
     </div>
   );
 }
