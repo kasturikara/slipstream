@@ -82,7 +82,7 @@ export async function getHistory(id: string) {
       .from("transaksi")
       .select("*")
       .eq("user_id", id)
-      .order("tanggal", { ascending: false });
+      .order("id", { ascending: false });
 
     if (!data || errorHistory) {
       console.log("Error get history: ", errorHistory);
@@ -92,5 +92,97 @@ export async function getHistory(id: string) {
     return data;
   } catch (error) {
     console.log("Error get history: ", error);
+  }
+}
+
+interface InsertData {
+  user_id: string;
+  type: string;
+  description: string;
+  amount: number;
+  date: string;
+}
+export async function insertTransactions(input: InsertData) {
+  try {
+    // Insert transaksi baru ke dalam tabel 'transaksi'
+    const { error: errorInsert } = await supabase.from("transaksi").insert({
+      user_id: input.user_id,
+      tipe: input.type,
+      deskripsi: input.description,
+      jumlah: Number(input.amount),
+      tanggal: input.date,
+    });
+
+    if (errorInsert) {
+      console.log("Error insert transaction: ", errorInsert);
+      await Swal.fire(
+        "Error",
+        "Failed to insert transaction. Please try again later.",
+        "error"
+      );
+      return null;
+    }
+
+    // Ambil data total dari user saat ini
+    const { data: userData, error: userError } = await supabase
+      .from("user")
+      .select("total")
+      .eq("id", input.user_id)
+      .single();
+
+    if (userError) {
+      console.log("Error fetching user total: ", userError);
+      return null;
+    }
+
+    const currentTotal = Number(userData.total) || 0; // Set total saat ini (jika null, set jadi 0)
+
+    // Tentukan apakah transaksi adalah income atau expense, dan update total user
+    const newTotal =
+      input.type === "income"
+        ? currentTotal + Number(input.amount)
+        : currentTotal - Number(input.amount);
+
+    // Update kolom total di tabel 'user'
+    const { error: updateError } = await supabase
+      .from("user")
+      .update({ total: newTotal })
+      .eq("id", input.user_id);
+
+    if (updateError) {
+      console.log("Error updating user total: ", updateError);
+      return null;
+    }
+
+    // update user di localstorage
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    user.total = newTotal;
+    localStorage.setItem("user", JSON.stringify(user));
+
+    // Jika semuanya berhasil
+    await Swal.fire("Success", "Transaction inserted successfully!", "success");
+    window.location.href = "/";
+  } catch (error) {
+    console.log("Error insert transaction: ", error);
+  }
+}
+
+export async function getUser(id: string) {
+  try {
+    const { data, error } = await supabase
+      .from("user")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (!data || error) {
+      console.log("Error get user: ", error);
+      return null;
+    }
+
+    localStorage.setItem("user", JSON.stringify(data));
+    return data;
+  } catch (error) {
+    console.log("Error get user: ", error);
   }
 }

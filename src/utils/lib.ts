@@ -28,3 +28,10 @@ export const formatDate = (dateString: string) => {
   };
   return new Intl.DateTimeFormat("en-US", options).format(new Date(dateString));
 };
+
+export const defaultSelectedDate = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  return `${year}-${month}-01`;
+};

@@ -1,38 +1,45 @@
 import React, { useEffect, useState } from "react";
 import BtnTheme from "../../components/ui/BtnTheme";
-import {
-  ArrowCircleDown,
-  ArrowCircleUp,
-  House,
-  PlusCircle,
-  UserCircle,
-} from "@phosphor-icons/react";
-import { Link, useLocation } from "react-router-dom";
-import { getHistory, getTotalPerMonth } from "../../api";
+import { ArrowCircleDown, ArrowCircleUp } from "@phosphor-icons/react";
+import { getHistory, getTotalPerMonth, getUser } from "../../api";
 import { months } from "../../utils/monthValue";
 import { FormatRupiah } from "@arismun/format-rupiah";
-import { formatDate, isToday, isYesterday } from "../../utils/lib";
+import {
+  defaultSelectedDate,
+  formatDate,
+  isToday,
+  isYesterday,
+} from "../../utils/lib";
+import FooterNav from "../../components/ui/FooterNav";
 
 const DashboardPage: React.FC = () => {
-  const location = useLocation();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [userDB, setUserDB] = useState<any>({});
   // total income & expense
   const [total, setTotal] = useState<{ income: number; expense: number }>({
     income: 0,
     expense: 0,
   });
   const [loading, setLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<string>("2024-09-01");
+  const [selectedDate, setSelectedDate] = useState<string>(
+    defaultSelectedDate()
+  );
   const [history, setHistory] = useState<any[] | null>(null);
 
   useEffect(() => {
     fetchBalance();
-  }, []);
+  }, [selectedDate]);
 
   const fetchBalance = async () => {
     setLoading(true);
 
     try {
+      const takeUser = await getUser(user?.id);
+      if (takeUser) {
+        setUserDB(takeUser);
+        localStorage.setItem("user", JSON.stringify(takeUser));
+      }
+
       const takeBalance = await getTotalPerMonth(user?.id, selectedDate);
       if (takeBalance) {
         setTotal({
@@ -58,22 +65,18 @@ const DashboardPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start h-screen bg-base-300">
-      {/* banner */}
-      <div className="fixed top-0 z-10 h-64 rounded-b-full w-[140vw] bg-gradient-to-b from-primary to-neutral"></div>
+    <>
       {/* nav atas */}
       <nav className="fixed top-0 z-20 flex items-center justify-between w-full px-4 py-2 text-primary-content">
-        <div className="flex items-center gap-2">
-          <img
-            src="https://img.icons8.com/?size=100&id=dCqQaqSmTHQm&format=png&color=000000"
-            alt="profile"
-            className="w-10 h-10 rounded-box"
-          />
-        </div>
+        <img
+          src="https://img.icons8.com/?size=100&id=dCqQaqSmTHQm&format=png&color=000000"
+          alt="profile"
+          className="w-10 h-10 rounded-box"
+        />
         <select
           value={selectedDate}
           onChange={handleDateChange}
-          className="select select-ghost"
+          className="bg-transparent border-0 rounded-sm select select-ghost"
         >
           {months.map((item) => (
             <option key={item.value} value={item.value + "-01"}>
@@ -91,7 +94,7 @@ const DashboardPage: React.FC = () => {
 
           <h2 className="justify-center text-lg card-title">Total Balance</h2>
           <p className="text-4xl font-extrabold text-center">
-            <FormatRupiah value={user?.total} />
+            <FormatRupiah value={userDB?.total} />
           </p>
           <div className="grid grid-cols-2 gap-4 mt-4">
             {/* card income */}
@@ -113,12 +116,11 @@ const DashboardPage: React.FC = () => {
       </div>
 
       {/* history */}
-      <div className="z-20 flex flex-col w-11/12 mt-4">
-        <div className="flex items-center justify-between gap-2">
-          <h2 className="text-lg font-bold">Transaction History</h2>
-          <button className=" text-slate-500 btn-ghost btn">See all</button>
-        </div>
-
+      <div className="z-20 flex items-center justify-between w-11/12 mt-4">
+        <h2 className="text-lg font-bold">Transaction History</h2>
+        <button className=" text-slate-500 btn-ghost btn">See all</button>
+      </div>
+      <div className="z-20 flex flex-col w-11/12 gap-2 overflow-y-auto max-h-64">
         {/* card history */}
         {history ? (
           history.map((item: any) => (
@@ -150,36 +152,8 @@ const DashboardPage: React.FC = () => {
       </div>
 
       {/* Footer Navigation */}
-      <footer className="fixed bottom-0 w-full bg-neutral text-neutral-content">
-        <ul className="flex items-center justify-between w-full h-16 px-6 py-2 menu menu-horizontal rounded-box">
-          <li>
-            <Link data-tip="Dashboard" className="tooltip" to="/">
-              <House
-                size={36}
-                weight={location.pathname === "/" ? "fill" : "regular"}
-              />
-            </Link>
-          </li>
-          <li>
-            <button className="btn btn-primary">
-              <PlusCircle
-                size={36}
-                weight="bold"
-                className="text-primary-content"
-              />
-            </button>
-          </li>
-          <li>
-            <Link data-tip="Profile" className="tooltip" to="/profile">
-              <UserCircle
-                size={36}
-                weight={location.pathname === "/profile" ? "fill" : "regular"}
-              />
-            </Link>
-          </li>
-        </ul>
-      </footer>
-    </div>
+      <FooterNav />
+    </>
   );
 };
 
