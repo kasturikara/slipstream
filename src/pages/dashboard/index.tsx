@@ -11,7 +11,7 @@ import {
   isYesterday,
 } from "../../utils/lib";
 import FooterNav from "../../components/ui/FooterNav";
-import LoadingDash from "../loading/loadingDash";
+import LoadingDash from "../loading/LoadingDash";
 
 const DashboardPage: React.FC = () => {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
